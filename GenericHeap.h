@@ -1,39 +1,39 @@
 #ifndef _GENHEAP_
 #define _GENHEAP_
 
-/* - - - USER DEFINED FIELDS - - - */
+#include "GenericHeapUserImp.h"
 
-#define MaxNodes 15
-
-// the user must define the struct HeapNode somewhere as follows
 /*
-	struct HeapNode{
-	     stuff goes here
-	};
+Library Usage:
+1. Implement/modify the methods and fields in the - USER DEFINED FIELDS - section
+2. For static heaps, create a BulkHeap via getBulkHeap(int) followed by a call to initializeStaticHeap 
+3. Multiple static heaps are permitted as long as bulkHeap has the space for them
+4. For a dynamic heap just create the heap struct followed by a call to initializeDynamicHeap
 */
 
-/*  
-	@description 			: returns a priority comparison of two nodes
-
-	@var a (struct HeapNode): a pointer to a heap
-	@var b (struct HeapNode): position to swap
-	@return      			: 1 if a is of a higher priority than b, 0 if a is of a lower priority than b and -1 otherwise
-
-	NOTE: The user must implement this
-*/
-extern int nodeCompare(struct HeapNode, struct HeapNode); // The User must implement this method to compare nodes. Output should be 1 if HeapNode a higher priority or 0 for no percolate up and -1 if the nodes are the same
-
-/* - - - END USER DEFINED FIELDS - - - */
+typedef enum { Static = 0, Dynamic = 1 } HeapType;
 
 struct Heap {
-	struct HeapNode heapArray[MaxNodes + 1];
+	struct HeapNode* heapArray;
 	int numItems;
+	int maxNodes;
+	HeapType type;
 };
 
-struct HeapNode peek(struct Heap);
-void insert(struct Heap*, struct HeapNode);
-struct HeapNode pop(struct Heap*);
-int remove(struct Heap*, struct HeapNode);
+struct BulkHeap {
+	struct HeapNode* bulk;
+	int spaceHolder;
+	int maxNodes;
+	unsigned int bulkSet;
+};
+struct BulkHeap* getBulkHeap(int);
+int initializeStaticHeap(struct Heap* , struct BulkHeap* , int );
+int initializeDynamicHeap(struct Heap* , int);
+
+const struct HeapNode* peekHeap(struct Heap);
+int addToHeap(struct Heap*, struct HeapNode);
+struct HeapNode popHeap(struct Heap*);
+int removeFromHeap(struct Heap*, struct HeapNode);
 
 
 #endif
