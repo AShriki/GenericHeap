@@ -1,0 +1,3 @@
+# only track the .c and .h files
+!.c
+!.h

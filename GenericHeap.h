@@ -11,13 +11,13 @@ Library Usage:
 4. For a dynamic heap just create the heap struct followed by a call to initializeDynamicHeap
 */
 
-typedef enum { Static = 0, Dynamic = 1 } HeapType;
+typedef enum { Static_Heap = 0, Dynamic_Heap = 1 } HeapMemoryType;
 
 struct Heap {
 	struct HeapNode* heapArray;
 	int numItems;
 	int maxNodes;
-	HeapType type;
+	HeapMemoryType type;
 };
 
 struct BulkHeap {
@@ -27,13 +27,12 @@ struct BulkHeap {
 	unsigned int bulkSet;
 };
 struct BulkHeap* getBulkHeap(int);
-int initializeStaticHeap(struct Heap* , struct BulkHeap* , int );
-int initializeDynamicHeap(struct Heap* , int);
+int initializeHeap(struct Heap* , struct BulkHeap* , HeapMemoryType , int );
 
 const struct HeapNode* peekHeap(struct Heap);
-int addToHeap(struct Heap*, struct HeapNode);
+int addToHeap(struct Heap* , struct HeapNode);
 struct HeapNode popHeap(struct Heap*);
-int removeFromHeap(struct Heap*, struct HeapNode);
+int removeFromHeap(struct Heap* , struct HeapNode);
 
 
 #endif

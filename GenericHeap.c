@@ -111,46 +111,34 @@ struct BulkHeap* getBulkHeap(int bulkheapsize) {
 	@return      : 1 if allocation was successful, 0 if not
 */
 
-int initializeStaticHeap(struct Heap* h, struct BulkHeap* b, int n) {
-	h->numItems = 0;
-	h->maxNodes = n;
+int initializeHeap(struct Heap* h, struct BulkHeap* b, HeapMemoryType t, int n) {
 
-	if (b->maxNodes < b->spaceHolder + n + 1 || !b->bulkSet)
-		return 0;
-
-	h->heapArray = &b->bulk[b->spaceHolder];
-
-	b->spaceHolder += n + 1;
-
-	h->maxNodes = n;
-	h->numItems = 0;
-	h->type = Static;
-
-	return 1;
-}
-
-/*
-	@description : Generates the heap dynamically using malloc
-
-	@var h       : a pointer to an unallocated heap
-	@var n       : For dynamic heap, n is the number of elements to initialize this heap
-	@return      : 1 if allocation was successful, 0 if not
-*/
-
-int initializeDynamicHeap(struct Heap* h, int n) {
-	h->maxNodes = n;
-	h->numItems = 0;
-	h->type = Dynamic;
-	h->heapArray = malloc(sizeof(struct HeapNode) * ( n + 1) );
-	if (h->heapArray == NULL)
-		return 0;
-	int i;
-	for (i = 0; i < n + 1; i++) {
-		initHeapNode(&h->heapArray[i]);
+	if (t) {
+		h->type = t;
+		h->heapArray = malloc(sizeof(struct HeapNode) * (n + 1));
+		if (h->heapArray == NULL)
+			return 0;
+		int i;
+		for (i = 0; i < n + 1; i++) {
+			initHeapNode(&h->heapArray[i]);
+		}
 	}
+	else {
+		if (b->maxNodes < b->spaceHolder + n + 1 || !b->bulkSet)
+			return 0;
+
+		h->heapArray = &b->bulk[b->spaceHolder];
+
+		b->spaceHolder += n + 1;
+
+		h->type = t;
+	}
+
+	h->maxNodes = n;
+	h->numItems = 0;
+
 	return 1;
 }
-
 /*
 	@description : Swaps two indecies in a heap
 

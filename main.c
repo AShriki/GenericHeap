@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 	printf("\ntest 1: full random static heap\n");
 	struct BulkHeap* b = getBulkHeap(5);
 	struct Heap h1;
-	if (initializeStaticHeap(&h1, b, 15)) {
+	if (initializeHeap(&h1, b, Static_Heap,15)) {
 
 		// test : add max rand nodes
 		for (i = 0; i < h1.maxNodes; i++) {
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	printf("\ntest 2: Static array too large to be allocated\n");
 	struct Heap h2;
-	if (initializeStaticHeap(&h2, b, 241)) {
+	if (initializeHeap(&h2, b, Static_Heap, 241)) {
 
 		// test : 
 		for (i = 0; i < h2.maxNodes; i++) {
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	printf("\ntest 3: Create Large Static Array 239 elements\n");
 	struct Heap h3;
-	if (initializeStaticHeap(&h3, b, 239)) {
+	if (initializeHeap(&h3, b, Static_Heap, 239)) {
 
 		// test : add max rand nodes
 		for (i = 0; i < h3.maxNodes; i++) {
@@ -91,8 +91,8 @@ int main(int argc, char** argv) {
 	printf("\ntest 5: dynamic stack adding nodes\n");
 
 	struct Heap h4;
-	if (!initializeDynamicHeap(&h4, 4))
-		printf("Failed to initialize dynamic stack for heap h4\n");
+	if (!initializeHeap(&h4, NULL, Dynamic_Heap, 4))
+		printf("Failed to initialize dynamic memory for heap h4\n");
 	else {
 
 		// test : add max rand nodes
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 	int prev;
 	for (i = 0; i < h4.maxNodes; i++) {
 		int tmp = popHeap(&h4).a;
-		printf("%d\n", tmp);
+		printf("%d ", tmp);
 		prev = tmp;
 		if (prev > tmp) {
 			printf("\nTest Failed on %d, popped element out of order\n",i);
@@ -129,6 +129,48 @@ int main(int argc, char** argv) {
 		printf("\nHeap clear failed\n");
 	else
 		printf("\nHeap clear succeeded\n");
+
+	printf("\ntest 7: dynamic/static selective node remove\n");
+	
+	for (i = 0; i < 5000; i++) {
+		struct HeapNode n;
+		n.a = rand() % 1000 + 1;
+
+		if (!addToHeap(&h4, n)) {
+			printf("Dynamic allocation failed : heap h4");
+		}
+	}
+
+	if (!verifyHeapProperty(h4, 1))
+		printf("\nHeap Property check failed\n");
+	else
+		printf("\nHeap Property check succeeded\n");
+
+	printf("Removing: ");
+	for (i = 200; i < 300; i++) {
+		removeFromHeap(&h4,h4.heapArray[i]);
+		printf("%d ", h4.heapArray[i].a);
+	}
+
+	if (!verifyHeapProperty(h4, 1))
+		printf("\nHeap Property check failed\n");
+	else
+		printf("\nHeap Property check succeeded\n");
+	printf("\nFollowing list should be sorted: ");
+	for (i = 0; i < h4.numItems; i++) {
+		int tmp = popHeap(&h4).a;
+		printf("%d ", tmp);
+		prev = tmp;
+		if (prev > tmp) {
+			printf("\nTest Failed on %d, popped element out of order\n", i);
+			break;
+		}
+	}
+
+	if (!verifyHeapProperty(h4, 1))
+		printf("\nHeap property invalid\n");
+	else
+		printf("\nHeap verified\n");
 
 	return 0;
 }
